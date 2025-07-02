@@ -1,36 +1,34 @@
 import { expect, test } from "@playwright/test";
 import users from "../../data/user.json";
-
-test.beforeEach(async ({ page }) => {
-  // Navigate to the login page
-  await page.goto("https://www.saucedemo.com/");
-});
+import POManager from "../../page-objects/POManager";
 
 test("Login with valid credentials", async ({ page }) => {
-  // Fill VALID credentials in the username and password fields
-  await page.locator("#user-name").fill(users.validUser.username);
-  await page.locator("#password").fill(users.validUser.password);
+  const poManager = new POManager(page);
+  const loginPage = poManager.getLoginPage();
+  const inventoryPage = poManager.getInventoryPage();
 
-  // Click the login button
-  await page.locator("#login-button").click();
+  // Navigate to the login page
+  await loginPage.goto();
+
+  // Fill VALID credentials in the username and password fields
+  await loginPage.login(users.validUser.username, users.validUser.password);
 
   // Assert that the login was successful by checking the URL of the page
-  await page.waitForURL("https://www.saucedemo.com/inventory.html");
-  const url = await page.url();
-  await expect(url).toBe("https://www.saucedemo.com/inventory.html");
+  await inventoryPage.isAt();
 });
 
 test("Login with invalid credentials", async ({ page }) => {
-  // Fill INVALID credentials in the username and password fields
-  await page.locator("#user-name").fill(users.invalidUser.username);
-  await page.locator("#password").fill(users.invalidUser.password);
+  const poManager = new POManager(page);
+  const loginPage = poManager.getLoginPage();
 
-  // Click the login button
-  await page.locator("#login-button").click();
+  // Navigate to the login page
+  await loginPage.goto();
+
+  // Fill INVALID credentials in the username and password fields
+  await loginPage.login(users.invalidUser.username, users.invalidUser.password);
 
   // Assert that the login failed by checking the error message
-  const errorMessage = await page.locator("[data-test='error']").textContent();
-  await expect(errorMessage).toContain(
+  await loginPage.checkErrorMessage(
     "Epic sadface: Username and password do not match any user in this service"
   );
 });
