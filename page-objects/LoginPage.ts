@@ -15,6 +15,11 @@ export default class LoginPage {
     this.errorMessage = page.locator("[data-test='error']");
   }
 
+  async isAt() {
+    const url = this.page.url();
+    expect(url).toBe("https://www.saucedemo.com/");
+  }
+
   async goto() {
     await this.page.goto("https://www.saucedemo.com/");
   }
