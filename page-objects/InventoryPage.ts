@@ -55,4 +55,23 @@ export default class InventoryPage {
 
     return productDetails;
   }
+
+  async addProductToCart(productName: string) {
+    const product = (await this.products.all()).find(async (item) => {
+      const name = await item.locator(".inventory_item_name").textContent();
+      return name === productName;
+    });
+
+    if (!product) {
+      throw new Error(`Product "${productName}" not found.`);
+    }
+
+    const addToCartButton = product.locator(".btn_inventory");
+
+    if (await addToCartButton.isVisible()) {
+      await addToCartButton.click();
+    } else {
+      throw new Error(`Product "${productName}" not found or already in cart.`);
+    }
+  }
 }
