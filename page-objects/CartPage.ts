@@ -3,10 +3,12 @@ import { expect, Locator, Page } from "@playwright/test";
 export default class CartPage {
   private page: Page;
   private cartItems: Locator;
+  private checkoutButton: Locator;
 
   constructor(page) {
     this.page = page;
     this.cartItems = this.page.locator(".cart_item");
+    this.checkoutButton = this.page.locator("#checkout");
   }
 
   async isAt() {
@@ -44,5 +46,9 @@ export default class CartPage {
   async checkIfItemRemovedFromCart(productName: string) {
     const item = await this.findCartItem(productName);
     expect(item).toBeUndefined();
+  }
+
+  async goToCheckout() {
+    await this.checkoutButton.click();
   }
 }
