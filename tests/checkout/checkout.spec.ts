@@ -119,3 +119,48 @@ test("Complete checkout process", async ({ page }) => {
   // Assert "Thank you for your order!" message is displayed
   await checkoutCompletePage.checkCompleteOrderMessage();
 });
+
+test("Check if products stays in the cart after canceling checkout", async ({
+  page,
+}) => {
+  const poManager = new POManager(page);
+  const loginPage = poManager.getLoginPage();
+  const inventoryPage = poManager.getInventoryPage();
+  const menuPage = poManager.getMenuPage();
+  const cartPage = poManager.getCartPage();
+  const checkoutPage = poManager.getCheckoutPage();
+
+  // Navigate to the login page
+  await loginPage.goto();
+
+  // Fill VALID credentials in the username and password fields
+  await loginPage.login(users.validUser.username, users.validUser.password);
+
+  // Assert that the login was successful by checking the URL of the page
+  await inventoryPage.isAt();
+
+  // Add a product to the cart
+  const productName = "Sauce Labs Backpack";
+  await inventoryPage.addProductToCart(productName);
+
+  // Go to cart page
+  await menuPage.goToCart();
+
+  // Assert that the cart page is displayed
+  await cartPage.isAt();
+
+  // Assert that the product is in the cart
+  await cartPage.checkIfItemInCart(productName);
+
+  // Go to Checkout page
+  await cartPage.goToCheckout();
+
+  // Go back
+  await checkoutPage.goBack();
+
+  // Assert we are back on the cart page
+  await cartPage.isAt();
+
+  // Assert that produts are still in the cart
+  await cartPage.checkIfItemInCart(productName);
+});

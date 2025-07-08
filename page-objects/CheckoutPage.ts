@@ -8,6 +8,7 @@ export default class CheckoutPage {
   private firstNameField: Locator;
   private lastNameField: Locator;
   private postalCodeField: Locator;
+  private cancelButton: Locator;
 
   constructor(page) {
     this.page = page;
@@ -16,6 +17,7 @@ export default class CheckoutPage {
     this.firstNameField = this.page.locator("#first-name");
     this.lastNameField = this.page.locator("#last-name");
     this.postalCodeField = this.page.locator("#postal-code");
+    this.cancelButton = this.page.getByRole("button", { name: "Cancel" });
   }
 
   async clickContinue() {
@@ -47,5 +49,9 @@ export default class CheckoutPage {
     } else {
       throw new Error("Error message container not found");
     }
+  }
+
+  async goBack() {
+    await this.cancelButton.click();
   }
 }
