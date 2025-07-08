@@ -32,3 +32,33 @@ test("Login with invalid credentials", async ({ page }) => {
     "Epic sadface: Username and password do not match any user in this service"
   );
 });
+
+test("Login with locked user", async ({ page }) => {
+  const poManager = new POManager(page);
+  const loginPage = poManager.getLoginPage();
+
+  // Navigate to the login page
+  await loginPage.goto();
+
+  // Fill credentials for a locked user
+  await loginPage.login(users.blockedUser.username, users.blockedUser.password);
+
+  // Assert error message for blocked user
+  await loginPage.checkErrorMessage(
+    "Epic sadface: Sorry, this user has been locked out."
+  );
+});
+
+test("Login with empty login and password fields", async ({ page }) => {
+  const poManager = new POManager(page);
+  const loginPage = poManager.getLoginPage();
+
+  // Navigate to the login page
+  await loginPage.goto();
+
+  // Enter empty credentials
+  await loginPage.login("", "");
+
+  // Assert error message empty credentials
+  await loginPage.checkErrorMessage("Epic sadface: Username is required");
+});
